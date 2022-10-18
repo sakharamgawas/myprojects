@@ -1,0 +1,185 @@
+package com.example.twitter.controller;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import com.example.twitter.models.Rules;
+import com.example.twitter.models.Tweets;
+import com.example.twitter.rep.KeyRepository;
+import com.example.twitter.rep.TwitterRepository;
+
+import org.apache.catalina.connector.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import ch.qos.logback.core.status.StatusListener;
+import twitter4j.FilterQuery;
+import twitter4j.Status;
+import twitter4j.StatusAdapter;
+// import twitter4j.StreamListener;
+import twitter4j.TwitterException;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
+import twitter4j.conf.ConfigurationBuilder;
+
+@RestController
+@RequestMapping("/t")
+public class MyController {
+    static ArrayList<String> ans = new ArrayList<>();
+    @Autowired 
+    KeyRepository r; 
+    @Autowired
+    TwitterRepository t;
+
+@PostMapping(value="/")
+public ResponseEntity<?> addKeyword(@RequestBody Rules rules){
+    ArrayList<String> keywords = new ArrayList<>();
+    String [] temp =r.findAll().get(0).getKeywords();
+    for(String s:temp)
+        keywords.add(s);
+    for(String str:rules.getKeywords())
+        if(!keywords.contains(str)) keywords.add(str);
+    r.deleteAll();
+    String keywordsSave[]  = new String[keywords.size()]; 
+    int i=0;
+    for(String k:keywords)
+        keywordsSave[i++]=k;
+    rules.setKeywords(keywordsSave);
+    r.save(rules);
+    return ResponseEntity.ok("key added");
+}
+
+
+@GetMapping(value="/")
+public ResponseEntity<?> get(){
+    return ResponseEntity.ok(this.r.findAll());
+}
+
+@DeleteMapping(value="/")
+public ResponseEntity<?> deleteKeywords(@RequestBody Rules rules){
+    ArrayList<String> keywords = new ArrayList<>();
+    String [] temp =r.findAll().get(0).getKeywords();
+    for(String s:temp)
+        keywords.add(s);
+    for(String str:rules.getKeywords())
+        if(keywords.contains(str))
+            {
+                keywords.remove(str);
+            }
+
+        String keywordsSave[]  = new String[keywords.size()]; 
+        int i=0;
+        for(String k:keywords)
+            keywordsSave[i++]=k;
+        rules.setKeywords(keywordsSave);
+        r.deleteAll();
+        r.save(rules);
+    return ResponseEntity.ok("deleted");
+}
+
+//tweets
+@PostMapping(value = "tweet")
+public ResponseEntity<?> checktweet(@RequestBody Tweets tweets){
+    t.save(tweets);
+return ResponseEntity.ok("tweet saved");
+}
+
+@GetMapping(value="/tweet")
+public String matchingTweets() throws TwitterException{
+    ArrayList<String> keywords = new ArrayList<>();
+    String [] temp =r.findAll().get(0).getKeywords();
+    for(String s:temp)
+        keywords.add(s);
+        String keywordsSave[]  = new String[keywords.size()]; 
+        int i=0;
+        for(String k:keywords)
+            keywordsSave[i++]=k;
+        ConfigurationBuilder cb = new ConfigurationBuilder();
+        // cb.setDebugEnabled(true).
+        // setOAuthConsumerKey("iLDKbMKj6oDD7UcwxZydBJivq").
+        // setOAuthConsumerSecret("GT59lsoR9Ar90UjTOx8VMwq1xbVtXlYlSYbfTOXEosFwE3gTnd").
+        // setOAuthAccessToken("1479167181258514433-VpDZYWbjTahrXS2wAOozgE7c8Hoztw").
+        // setOAuthAccessTokenSecret("R3af7yJ4v8NJvaxaX0hwXIr6uQVvA6lP8dPlMQHu2y7TF"); 
+        
+
+        // cb.setDebugEnabled(true).
+        //  setOAuthConsumerKey("dWZnR1hfel9fQmhkWEZHcGJHcDg6MTpjaQ").
+        // setOAuthConsumerSecret("UW647K1py9X9WBdi_w209xB09yxm9Kqh_5uJIhTlyu_CmHWC7A").
+        // setOAuth2AccessToken("AAAAAAAAAAAAAAAAAAAAABL2XwEAAAAAByCDKwwb7iEQA5RKXZ4HQk0g69Q%3D46aZxrICYqz3fxOsCzKlyoPUkuf001wgSPq1ERxZFPNVtyPdDl")
+        // .setOAuth2TokenType("client_credentials")
+        // .setOAuthAccessToken("1479167181258514433-VpDZYWbjTahrXS2wAOozgE7c8Hoztw")
+        // . setOAuthAccessTokenSecret("R3af7yJ4v8NJvaxaX0hwXIr6uQVvA6lP8dPlMQHu2y7TF"); 
+
+        //##ID2
+        // cb.setDebugEnabled(true).
+        // setOAuthConsumerKey("h1V2IEa92es9fPAvXKjfYa2bsA").
+        // setOAuthConsumerSecret("8ah0kqZa0S8UmSmLivAwvHzdIN9wVonZn1ApXhi2CR627bgzOH").
+        // setOAuthAccessToken("813652923230146560-80dH1yisi60sRPdr6VuJKjj7kOAIysv").
+        // setOAuthAccessTokenSecret("iB92Nq2fHlubiU5UQGG71deXx2E3h92GfGXn4rdBbh0PO");
+        // setOAuth2AccessToken("AAAAAAAAAAAAAAAAAAAAABL2XwEAAAAAByCDKwwb7iEQA5RKXZ4HQk0g69Q%3D46aZxrICYqz3fxOsCzKlyoPUkuf001wgSPq1ERxZFPNVtyPdDl")
+        // .setOAuth2TokenType("client_credentials") 
+        
+//tnkkl
+    //     cb.setDebugEnabled(true).
+    //    setOAuthConsumerKey("dWZnR1hfel9fQmhkWEZHcGJHcDg6MTpjaQ").
+    //    setOAuthConsumerSecret("cdV3AvsIEppn6T_ylkTqcSNc9KqHu5awA8hoQRfdWl19fIsRr-")
+    //   .setOAuthAccessToken("1479167181258514433-At15SKlPV3V4tp0g3pXHpbysY4S7Ok")
+    //   . setOAuthAccessTokenSecret("531HRI2DkNYOseVv2ZXF0r4QMYQp0ZhQgIYfFop5VlzOP"); 
+
+//
+// ConfigurationBuilder cb = new ConfigurationBuilder();
+cb.setDebugEnabled(true)
+.setOAuthConsumerKey("j7PsiUsTHBObLf8doXZDG8Dxq")
+.setOAuthConsumerSecret("fr4eL8HBVmo2au9FXach4QObbzXUz3VA4dXxWRYi3BJDfvZzJ3")
+.setOAuthAccessToken("1427266058784632832-AQmYU9vGUXGSHI4wGuBkxlOiKkBr1v")
+.setOAuthAccessTokenSecret("mQhhz0pYJAzVNqkTOZaG6hTv58WWHVp4pRKo1S2w6AIoX");
+
+        StatusAdapter listener =  new StatusAdapter(){
+            @Override
+            public void onStatus(Status status){
+                System.out.println("LISTENER StartED");
+                final String statusText = status.getText();
+                System.out.println("GOT statusText= "+statusText);
+                for(String keyword: keywords){
+                    System.out.println("KEYWORD IS "+keyword);
+                    if(statusText.contains(keyword)){
+                        System.out.println("Inside contains");
+                        String date = status.getCreatedAt().toString();
+                        System.out.println("GOT date");
+                        String hash = status.getHashtagEntities().toString();
+                        System.out.println("GOT Hash");
+                        Tweets tweet = new Tweets(keyword,statusText,date,hash);
+                        System.out.println("tweet CREATED");
+                        t.save(tweet);
+                        System.out.println("END OF  LISTENER");
+                    }
+                }
+            }
+        };
+
+      System.out.println("out of LISTENER");
+
+        TwitterStream tStream= new TwitterStreamFactory(cb.build()).getInstance();
+        System.out.println("After GETINSTACE");
+        tStream.addListener(listener);
+        System.out.println("After addlistner");
+        // tStream.sample();
+        FilterQuery filter = new FilterQuery();
+        filter.track(keywordsSave);
+        System.out.println("After filterquery.traack");
+        tStream.filter(filter);
+        System.out.println("END");
+
+        return "Tweets end";
+    
+}
+
+
+}
