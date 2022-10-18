@@ -1,0 +1,15 @@
+.lonePhoto{
+    margin:10px 0;
+    /* display: inline;
+    flex-flow: row;
+    flex-grow: inherit; */
+}
+.img{
+    height:270px
+}
+.afterNavbar{
+    margin:10px auto;
+}
+.spinner{
+    marginTop:"100px"
+}

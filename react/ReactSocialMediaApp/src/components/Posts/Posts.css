@@ -1,0 +1,27 @@
+.lonePhoto{
+    margin:10px 0;
+    /* display: inline;
+    flex-flow: row;
+    flex-grow: inherit; */
+}
+.img{
+    height:270px;
+}
+.afterNavbar{
+    margin:10px auto;
+}
+.spinner{
+    margin-top:100px;
+}
+.posts-container{
+    max-width: 40% !important;
+
+  }
+  .post-header{
+      display: flex;
+      justify-content: space-between;
+  }
+  .post-time{
+      opacity: 0.8;
+      margin-bottom: 0%;
+  }
